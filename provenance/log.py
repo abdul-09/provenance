@@ -100,6 +100,18 @@ class Event:
         """Helper: hash document text for the text_hash field."""
         return sha256_hex(text.encode("utf-8"))
 
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "Event":
+        """Rebuild an Event from its serialized form."""
+        return cls(
+            seq=data["seq"],
+            type=EventType(data["type"]),
+            timestamp=data["timestamp"],
+            position=data["position"],
+            length=data["length"],
+            text_hash=data["text_hash"],
+        )
+
 
 @dataclass
 class EventLog:
@@ -161,3 +173,14 @@ class EventLog:
         for e in events:
             log.append(e)
         return log
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "EventLog":
+        """Rebuild a log from its serialized form, recomputing the chain.
+
+        The stored head is NOT trusted blindly: we rebuild the chain from the events
+        and let verify() decide. A tampered head will simply fail verification, which
+        is the point.
+        """
+        events = [Event.from_dict(e) for e in data["events"]]
+        return cls.from_events(events)

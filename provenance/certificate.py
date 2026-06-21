@@ -17,10 +17,12 @@ key never leaves the service.
 """
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from typing import Any
 
 from cryptography.exceptions import InvalidSignature
+from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import (
     Ed25519PrivateKey,
     Ed25519PublicKey,
@@ -29,6 +31,20 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import (
 from .log import EventLog, Event, EventType, canonical_bytes, sha256_hex
 
 CERTIFICATE_VERSION = 1
+
+
+def public_key_to_hex(public_key: Ed25519PublicKey) -> str:
+    """Serialize an Ed25519 public key to raw hex, for publishing."""
+    raw = public_key.public_bytes(
+        encoding=serialization.Encoding.Raw,
+        format=serialization.PublicFormat.Raw,
+    )
+    return raw.hex()
+
+
+def public_key_from_hex(hex_str: str) -> Ed25519PublicKey:
+    """Load an Ed25519 public key from raw hex."""
+    return Ed25519PublicKey.from_public_bytes(bytes.fromhex(hex_str))
 
 
 @dataclass(frozen=True)
@@ -65,6 +81,25 @@ class Certificate:
         out["signature"] = self.signature
         return out
 
+    def to_json(self) -> str:
+        """Serialize to a shareable JSON string. This is the artifact a writer hands
+        to a verifier."""
+        return json.dumps(self.to_dict(), sort_keys=True, separators=(",", ":"))
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "Certificate":
+        return cls(
+            version=data["version"],
+            document_hash=data["document_hash"],
+            sealed_at=data["sealed_at"],
+            log=EventLog.from_dict(data["log"]),
+            signature=data["signature"],
+        )
+
+    @classmethod
+    def from_json(cls, text: str) -> "Certificate":
+        return cls.from_dict(json.loads(text))
+
 
 class Signer:
     """Holds the service private key and seals sessions into certificates."""
@@ -78,6 +113,10 @@ class Signer:
 
     def public_key(self) -> Ed25519PublicKey:
         return self._key.public_key()
+
+    def public_key_hex(self) -> str:
+        """The public key in portable hex form, to publish for verifiers."""
+        return public_key_to_hex(self._key.public_key())
 
     def seal(
         self, log: EventLog, final_text: str, sealed_at: int
