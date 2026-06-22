@@ -32,13 +32,26 @@ will not verify.
 Knowing when it happened. The certificate records when it was sealed, so a session
 that appears the night before a deadline is at least visible as such.
 
+## Try it
+
+```bash
+pip install -e ".[dev]"
+provenance demo sample
+provenance verify sample.cert.json sample.key.hex
+```
+
+The demo writes a sample certificate and its public key; verify checks the
+certificate and prints a verdict with the session duration and paste fraction,
+exiting non-zero if the certificate is invalid.
+
 ## Status
 
-First commit: the trust core. The hash-chained event log and the signing and
-verification of certificates, proven tamper-evident with tests. The browser capture
-layer and the verification UI come in later commits, on top of this core. The
-serialization is deliberately language-neutral (sorted-key JSON, UTF-8, hash the
-bytes) so the future browser layer can produce byte-identical hashes.
+The trust core, the session recorder, the JSON certificate format, the verifier, and
+a command-line tool, all in Python and tested at 100% coverage. The browser capture
+layer (TypeScript) and the verification web surface come next, built on top of this
+canonical, tested core. The serialization is deliberately language-neutral
+(sorted-key JSON, UTF-8, hash the bytes) so the browser layer can produce
+byte-identical hashes.
 
 ## Develop
 
