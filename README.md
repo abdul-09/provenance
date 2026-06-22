@@ -46,12 +46,18 @@ exiting non-zero if the certificate is invalid.
 
 ## Status
 
-The trust core, the session recorder, the JSON certificate format, the verifier, and
-a command-line tool, all in Python and tested at 100% coverage. The browser capture
-layer (TypeScript) and the verification web surface come next, built on top of this
-canonical, tested core. The serialization is deliberately language-neutral
-(sorted-key JSON, UTF-8, hash the bytes) so the browser layer can produce
-byte-identical hashes.
+The Python side is a finished, tested tool: trust core, recorder, certificate format,
+verifier, and CLI, at 100% coverage. The browser capture layer (TypeScript, in
+browser/) records a session and seals a certificate that the Python CLI verifies, with
+a cross-language test proving byte-level agreement. The HTML writing surface that
+drives the capture layer comes next.
+
+The browser layer runs with Node's built-in test runner and no build step:
+
+```bash
+cd browser
+npm test
+```
 
 ## Develop
 

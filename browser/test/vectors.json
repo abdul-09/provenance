@@ -1,0 +1,81 @@
+{
+  "canonical": [
+    {
+      "input": {
+        "b": 1,
+        "a": 2
+      },
+      "expected": "{\"a\":2,\"b\":1}"
+    },
+    {
+      "input": {
+        "k": "café"
+      },
+      "expected": "{\"k\":\"café\"}"
+    },
+    {
+      "input": {
+        "z": [
+          1,
+          2
+        ],
+        "a": {
+          "n": 3
+        }
+      },
+      "expected": "{\"a\":{\"n\":3},\"z\":[1,2]}"
+    }
+  ],
+  "text_hash": [
+    {
+      "text": "",
+      "expected": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "text": "Hello",
+      "expected": "185f8db32271fe25f561a6fc938b2e264306ec304eda518007d1764826381969"
+    },
+    {
+      "text": "café ☕",
+      "expected": "a7e46d54289812af2aa5b08c2fbab5d24bccfc6586df55b187272c8a2a31c85f"
+    }
+  ],
+  "chain": {
+    "genesis": "0000000000000000000000000000000000000000000000000000000000000000",
+    "events": [
+      {
+        "seq": 0,
+        "type": "session_start",
+        "timestamp": 0,
+        "position": 0,
+        "length": 0,
+        "text_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "seq": 1,
+        "type": "insert",
+        "timestamp": 1000,
+        "position": 0,
+        "length": 5,
+        "text_hash": "185f8db32271fe25f561a6fc938b2e264306ec304eda518007d1764826381969"
+      },
+      {
+        "seq": 2,
+        "type": "paste",
+        "timestamp": 2000,
+        "position": 5,
+        "length": 6,
+        "text_hash": "045f13dd864bafaad0dd977ac971de549b090cb2836f061d0779b26dd9bb8f4b"
+      },
+      {
+        "seq": 3,
+        "type": "session_end",
+        "timestamp": 3000,
+        "position": 11,
+        "length": 0,
+        "text_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "expected_head": "0df1dc553500110945976d7ebfb31d94d8ac399bf5c17160945c6ef490466c14"
+  }
+}
